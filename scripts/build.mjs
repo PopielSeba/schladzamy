@@ -13,6 +13,12 @@ if (!['https:', 'http:'].includes(parsedUrl.protocol)) throw new Error('SITE_URL
 const siteUrl = parsedUrl.href.replace(/\/+$/, '');
 const homePage = pages.find(page => page.path === '/');
 const siteName = homePage?.title?.split('|').at(-1)?.trim() || new URL(siteUrl).hostname;
+const aiFacts = [
+  "Oferta obejmuje mobilne klimatyzatory Lennox BAH 085, Carrier FC93 i Dantherm AC-M18.",
+  "Zakres mocy chłodniczej oferty wynosi od 17,5 kW do około 90 kW; część wartości jest orientacyjna i wymaga potwierdzenia dla konkretnej jednostki.",
+  "REKORD przygotowuje oferty wynajmu oraz indywidualne zapytania o zakup klimatyzacji przemysłowej.",
+  "REKORD obsługuje projekty chłodzenia hal, magazynów i wydarzeń w Polsce i Unii Europejskiej.",
+];
 const htmlToText = html => html
   .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
   .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
@@ -53,6 +59,9 @@ const llmsIndex = [
   `# ${siteName}`,
   '',
   `> ${homePage?.description || 'Oficjalna strona oferty.'}`,
+  '',
+  '## Najważniejsze fakty',
+  ...aiFacts.map(fact => `- ${fact}`),
   '',
   '## Oficjalne strony',
   ...indexablePages.map(page => `- [${page.title}](${siteUrl}${page.path}): ${page.description}`),
