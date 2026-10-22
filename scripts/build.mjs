@@ -14,8 +14,8 @@ const siteUrl = parsedUrl.href.replace(/\/+$/, '');
 const homePage = pages.find(page => page.path === '/');
 const siteName = homePage?.title?.split('|').at(-1)?.trim() || new URL(siteUrl).hostname;
 const htmlToText = html => html
-  .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi, ' ')
-  .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi, ' ')
+  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+  .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
   .replace(/<[^>]+>/g, ' ')
   .replace(/&nbsp;/g, ' ')
   .replace(/&amp;/g, '&')
@@ -23,7 +23,7 @@ const htmlToText = html => html
   .replace(/&#39;/g, "'")
   .replace(/&lt;/g, '<')
   .replace(/&gt;/g, '>')
-  .replace(/\\s+/g, ' ')
+  .replace(/\s+/g, ' ')
   .trim();
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
