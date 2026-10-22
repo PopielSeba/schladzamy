@@ -1,0 +1,13 @@
+{
+  "name": "schladzamy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Schładzamy — wynajem i sprzedaż klimatyzacji przemysłowej",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
