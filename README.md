@@ -4,7 +4,9 @@ Strona marki REKORD poświęcona wynajmowi i sprzedaży klimatyzacji przemysłow
 
 - Repozytorium: [PopielSeba/schladzamy](https://github.com/PopielSeba/schladzamy).
 - Domena docelowa: **schladzamy.pl**.
-- Publikacja na Vercel i konfiguracja domeny: **w przygotowaniu**.
+- Strona produkcyjna: [schladzamy.vercel.app](https://schladzamy.vercel.app/).
+- Hosting: **Vercel — Sebastian's projects / schladzamy**.
+- Domeny dodane w Vercel; **oczekują na zmianę rekordów DNS w UT**.
 
 ## Budowanie i sprawdzanie
 
@@ -95,7 +97,12 @@ Linki do kontaktu mogą wstępnie wybierać rodzaj oferty i model, np. `/kontakt
 
 ## Publikacja
 
-Docelowy hosting: **Vercel**, konto **Sebastian's projects**, projekt **schladzamy**. Repozytorium GitHub przechowuje kod źródłowy.
+Strona jest wdrożona na **Vercel**, konto **Sebastian's projects**, projekt **schladzamy**. Gałąź produkcyjna to `main` w tym repozytorium GitHub; kolejne zmiany w tej gałęzi uruchamiają wdrożenie.
+
+- [Działająca strona](https://schladzamy.vercel.app/)
+- [Projekt w Vercel](https://vercel.com/sebastians-projects-e047c519/schladzamy)
+- [Konfiguracja domen w Vercel](https://vercel.com/sebastians-projects-e047c519/schladzamy/settings/domains)
+- Wdrożenie kodu: `35fd8bff9d40bda230cb3356cab00bde5fc2fc2e`.
 
 Konfiguracja `vercel.json`:
 
@@ -104,14 +111,34 @@ Konfiguracja `vercel.json`:
 - katalog publikacji: `dist`;
 - `trailingSlash: true`.
 
-Wdrożenie, jego adres i rekordy DNS wymagane przez konkretny projekt Vercel są obecnie przygotowywane. Domena ma zostać połączona przez ustawienia DNS w **UT**, zgodnie z wartościami wskazanymi w panelu Vercel.
+### Rekordy do ustawienia w UT
 
-### Stan DNS przed podłączeniem Vercel
+Wartości odczytane z konfiguracji **tego projektu** w Vercel 22 października 2026 r.:
 
-| Nazwa | Typ | Obecna wartość | Uwagi |
-| --- | --- | --- | --- |
-| `schladzamy.pl` / `@` | A | `54.38.201.206` | Do aktualizacji po uzyskaniu docelowych rekordów Vercel. |
-| `www` | A | `54.38.201.206` | Do aktualizacji zgodnie z konfiguracją domeny w Vercel. |
-| `schladzamy.pl` / `@` | MX | `plhost.ut.pl`, priorytet 10 | **Pozostawić bez zmiany — obsługa poczty.** |
+| Nazwa / host | Typ | Wartość |
+| --- | --- | --- |
+| `@` | A | `216.198.79.1` |
+| `www` | CNAME | `8b0b66351c55a405.vercel-dns-017.com.` |
 
-Po wdrożeniu należy zweryfikować domenę, HTTPS, przekierowanie wybranego wariantu www, adresy canonical i sitemapę. Konkretny adres wdrożenia oraz finalne rekordy DNS zostaną dopisane po ich potwierdzeniu.
+1. Zmień dotychczasowy rekord A dla `@` z `54.38.201.206` na wskazany adres Vercel.
+2. Zastąp dotychczasowy rekord A dla `www` (`54.38.201.206`) powyższym CNAME. Rekord A i CNAME nie mogą pozostać równocześnie dla tej samej nazwy `www`.
+3. Zachowaj serwery nazw UT (`ns1.ut.pl`, `ns2.ut.pl`) i rekordy poczty. Istniejący MX to `plhost.ut.pl`, priorytet **10**. Zachowaj także ewentualne rekordy TXT weryfikacji i poczty.
+4. TTL może pozostać dotychczasowy: **3600 sekund**.
+
+Domena `schladzamy.pl` jest przypisana do **Production**. Dla `www.schladzamy.pl` zapisano **308 Permanent Redirect → schladzamy.pl**. W chwili przygotowania instrukcji obie domeny mają w Vercel status **Invalid Configuration**, ponieważ publiczny DNS nadal wskazuje parking UT. Wpisy w panelu UT pozostają do zmiany przez właściciela.
+
+Po zmianie DNS należy sprawdzić propagację, aktywację HTTPS i przekierowanie www. Nie trzeba ponownie publikować kodu — adresy canonical, Open Graph i mapa witryny już wskazują `https://schladzamy.pl`.
+
+### Kontrole po wdrożeniu
+
+Weryfikacja 22 października 2026 r. na publicznym aliasie Vercel potwierdziła:
+
+- wszystkie 11 publicznych stron zwraca HTTP 200;
+- unikalne tytuły i opisy, po jednym H1, język polski i prawidłowe dane JSON-LD;
+- poprawne canonicale do docelowej domeny, `robots.txt` oraz 11 adresów w `sitemap.xml`;
+- rzeczywisty status 404 dla nieistniejącej strony, własny widok błędu i `noindex`;
+- przekierowania 308 z HTTP do HTTPS i z adresu modelu bez końcowego ukośnika;
+- dostępność 23 sprawdzonych zasobów CSS, JS, fontów i grafik;
+- działanie galerii, formularza z przeniesionym modelem, menu mobilnego oraz układu przy szerokości telefonu.
+
+Kontrola nie potwierdza jeszcze działania własnej domeny przed zmianą DNS ani indeksacji Google. Po uruchomieniu domeny można zgłosić w Google Search Console mapę `https://schladzamy.pl/sitemap.xml`. Weryfikacja własności w Search Console wymaga rekordu wygenerowanego dla tej konkretnej usługi i konta Google.
