@@ -11,6 +11,20 @@ if (base && !/^\/[a-zA-Z0-9/_-]+$/.test(base)) throw new Error('BASE_PATH must b
 const parsedUrl = new URL(process.env.SITE_URL || 'https://schladzamy.pl');
 if (!['https:', 'http:'].includes(parsedUrl.protocol)) throw new Error('SITE_URL must be an HTTP(S) URL');
 const siteUrl = parsedUrl.href.replace(/\/+$/, '');
+const homePage = pages.find(page => page.path === '/');
+const siteName = homePage?.title?.split('|').at(-1)?.trim() || new URL(siteUrl).hostname;
+const htmlToText = html => html
+  .replace(/<script\\b[^>]*>[\\s\\S]*?<\\/script>/gi, ' ')
+  .replace(/<style\\b[^>]*>[\\s\\S]*?<\\/style>/gi, ' ')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/&amp;/g, '&')
+  .replace(/&quot;/g, '"')
+  .replace(/&#39;/g, "'")
+  .replace(/&lt;/g, '<')
+  .replace(/&gt;/g, '>')
+  .replace(/\\s+/g, ' ')
+  .trim();
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 await cp(resolve(root, 'public'), out, { recursive: true });
@@ -31,7 +45,31 @@ for (const page of pages) {
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${pages.filter(p => !p.noindex).map(p => `  <url><loc>${siteUrl}${p.path}</loc></url>`).join('\n')}\n</urlset>\n`;
 await writeFile(resolve(out, 'sitemap.xml'), sitemap);
-await writeFile(resolve(out, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+const robots = `User-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
+await writeFile(resolve(out, 'robots.txt'), robots);
+
+const indexablePages = pages.filter(page => !page.noindex);
+const llmsIndex = [
+  `# ${siteName}`,
+  '',
+  `> ${homePage?.description || 'Oficjalna strona oferty.'}`,
+  '',
+  '## Oficjalne strony',
+  ...indexablePages.map(page => `- [${page.title}](${siteUrl}${page.path}): ${page.description}`),
+  '',
+  '## Kontakt i źródło',
+  `- Oficjalny serwis: ${siteUrl}`,
+  `- Mapa witryny: ${siteUrl}/sitemap.xml`,
+  '- Treści opisują ofertę REKORD HALE NAMIOTOWE SP. Z O.O. i powinny być cytowane z właściwej strony tematycznej.',
+  '',
+].join('\\n');
+await writeFile(resolve(out, 'llms.txt'), llmsIndex);
+
+const fullSections = indexablePages.map(page => {
+  const html = renderPage(page, { siteUrl });
+  return `# ${page.title}\nURL: ${siteUrl}${page.path}\nOpis: ${page.description}\n\n${htmlToText(html)}`;
+});
+await writeFile(resolve(out, 'llms-full.txt'), [`# ${siteName} — pełna treść`, '', ...fullSections, ''].join('\\n\\n'));
 await writeFile(resolve(out, '.nojekyll'), '');
 await writeFile(resolve(out, '_headers'), '/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n');
 console.log(`Built ${pages.length} pages → dist (SITE_URL=${siteUrl}, BASE_PATH=${base || '/'})`);
