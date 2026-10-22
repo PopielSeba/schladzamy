@@ -133,7 +133,7 @@ function notFound() {
 }
 
 export const pages = [
-  { path: '/', active: 'home', title: 'Schładzamy — wynajem i sprzedaż klimatyzacji przemysłowej', description: 'Mobilna klimatyzacja do hal, magazynów i eventów. Wynajem oraz indywidualne oferty zakupu Lennox, Carrier i Dantherm. Dobór i dostawa w Polsce i UE.', render: home },
+  { path: '/', active: 'home', title: 'Wynajem i sprzedaż klimatyzacji przemysłowej | Schładzamy', description: 'Mobilna klimatyzacja do hal, magazynów i eventów. Wynajem oraz indywidualne oferty zakupu Lennox, Carrier i Dantherm. Dobór i dostawa w Polsce i UE.', render: home },
   ...['rental', 'sale'].map(type => ({ path: paths[type], active: type, title: servicePages[type].metaTitle, description: servicePages[type].metaDescription, crumbs: [{ name: servicePages[type].eyebrow, path: paths[type] }], render: () => service(type) })),
   { path: paths.catalog, active: 'catalog', title: 'Klimatyzatory przemysłowe — Lennox, Carrier, Dantherm | Schładzamy', description: 'Poznaj klimatyzatory Lennox BAH 085, Carrier FC93 i Dantherm AC-M18. Moce od 17,5 do ok. 90 kW, parametry i dobór do hal, eventów oraz magazynów.', crumbs: [{ name: 'Klimatyzatory', path: paths.catalog }], render: catalog },
   ...equipment.map(item => ({ path: productPath(item), active: 'product', product: item, title: `${item.name} — ${item.power}, wynajem i zakup | Schładzamy`, description: `${item.name}: ${item.power} mocy chłodniczej${item.approximate ? ' orientacyjnej' : ''}. Poznaj parametry, zastosowanie i zapytaj o wynajem lub zakup z doborem konfiguracji.`, crumbs: [{ name: 'Klimatyzatory', path: paths.catalog }, { name: item.name, path: productPath(item) }], render: () => product(item) })),
