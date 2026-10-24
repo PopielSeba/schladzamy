@@ -11,6 +11,7 @@ const basePath = ('/' + (process.env.BASE_PATH ?? '').replace(/^\/+|\/+$/g, ''))
 const expectedSiteUrl = new URL(process.env.SITE_URL || 'https://schladzamy.pl').href.replace(/\/+$/, '');
 const requiredRoutes = [
   '/',
+  '/serwis-klimatyzacji/',
   '/wynajem-klimatyzacji/',
   '/sprzedaz-klimatyzacji/',
   '/klimatyzatory/',
@@ -300,6 +301,22 @@ async function checkSitemap() {
   }
 }
 
+async function checkAiIndexes() {
+  for (const name of ['llms.txt', 'llms-full.txt']) {
+    const filename = path.join(dist, name);
+    if (!await isFile(filename)) {
+      report(name, 'missing information file');
+      continue;
+    }
+    const content = await readFile(filename, 'utf8');
+    if (!content.startsWith('# ')) report(name, 'missing Markdown heading');
+    if (!content.includes('\n')) report(name, 'missing actual line breaks');
+    if (content.includes(String.fromCharCode(92) + 'n')) report(name, 'literal escaped newline sequences');
+    const serviceRoute = requiredRoutes.find(route => route.startsWith('/serwis-'));
+    if (serviceRoute && !content.includes(serviceRoute)) report(name, 'missing service URL');
+  }
+}
+
 async function main() {
   if (Number.parseInt(process.versions.node, 10) < 22) {
     throw new Error('Node.js 22 or newer is required.');
@@ -329,6 +346,7 @@ async function main() {
   for (const filename of files) await checkPage(filename);
   if (canonicalOrigins.size > 1) report('canonicals', 'pages use more than one origin');
   await checkSitemap();
+  await checkAiIndexes();
   if (errors.size) {
     console.error('Site checks failed (' + errors.size + '):\n'
       + [...errors].map((error) => '  - ' + error).join('\n'));
