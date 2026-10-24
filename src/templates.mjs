@@ -248,10 +248,9 @@ export function renderPage(page, { siteUrl }) {
     { '@type': page.active === 'guides' ? 'CollectionPage' : 'WebPage', '@id': url, url, name: page.title, description: page.description, inLanguage: 'pl-PL', isPartOf: { '@id': `${siteUrl}/#website` } },
   ];
   if (page.crumbs) graph.push({ '@type': 'BreadcrumbList', itemListElement: [{ name: 'Strona główna', path: '/' }, ...page.crumbs].map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, name: crumb.name, item: `${siteUrl}${crumb.path}` })) });
-  if (page.product) {
-    const item = page.product;
-    graph.push({ '@type': 'Product', '@id': `${url}#product`, name: item.name, brand: { '@type': 'Brand', name: item.brand }, model: item.model, description: item.description, image: `${siteUrl}${item.image}`, url, additionalProperty: item.specs.map(spec => ({ '@type': 'PropertyValue', name: spec.label, value: spec.value })) });
-  }
+  // Product rich-result markup requires a verified offer or genuine review/rating.
+  // Model specifications remain visible in HTML; avoid unsupported Product snippets.
+
   if (page.active === 'catalog') graph.push({ '@type': 'ItemList', name: 'Klimatyzatory przemysłowe', itemListElement: equipment.map((item, index) => ({ '@type': 'ListItem', position: index + 1, name: item.name, url: `${siteUrl}${productPath(item)}` })) });
   if (page.active === 'guides') graph.push({ '@type': 'ItemList', name: 'Poradniki Schładzamy', itemListElement: pages.filter(p => p.active === 'guide').map((p, index) => ({ '@type': 'ListItem', position: index + 1, name: p.title, url: `${siteUrl}${p.path}` })) });
   if (page.active === 'repair') graph.push({ '@type': 'Service', '@id': `${url}#service`, name: 'Serwis i naprawa klimatyzacji przemysłowej', serviceType: 'Diagnostyka, serwis i naprawa klimatyzacji przemysłowej', provider: { '@id': `${siteUrl}/#organization` }, url });
