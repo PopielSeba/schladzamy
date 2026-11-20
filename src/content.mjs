@@ -127,6 +127,10 @@ export const faq = [
     a: 'Obsługujemy hale namiotowe, magazyny, obiekty przemysłowe, eventy oraz zaplecza techniczne. Mobilna klimatyzacja może zapewniać chłodzenie tymczasowe lub wspierać istniejący system. Zakres ustalamy dla danego obiektu.',
   },
   {
+    q: 'Jak przygotować halę do wynajmu klimatyzacji przemysłowej?',
+    a: 'Przed zapytaniem przygotuj wymiary i wysokość hali, informacje o izolacji i nasłonecznieniu, liczbie osób oraz źródłach ciepła. Ważne są także dostępna moc zasilania, miejsce ustawienia jednostek, możliwość prowadzenia kanałów powietrznych i planowany termin. Na tej podstawie możemy omówić konfigurację chłodzenia; sam metraż nie pozwala wiarygodnie dobrać urządzeń.',
+  },
+  {
     q: 'Jak dobieracie moc klimatyzacji?',
     a: 'Uwzględniamy wymiary i izolację obiektu, nasłonecznienie, liczbę osób, pracujące urządzenia oraz otwieranie bram i drzwi. Ważne są też oczekiwana temperatura, czas pracy i rozprowadzenie powietrza. Same metry kwadratowe nie wystarczą do doboru.',
   },
